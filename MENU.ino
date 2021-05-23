@@ -1,19 +1,19 @@
-// Подключение библиотек
+// Include libraries
 #include <GyverOLED.h> 
 #include <GyverButton.h>
 
-#define ITEMS 16 // Количество пунктов в меню
+#define ITEMS 16 // Quantity items in menu
 
-GButton down(4, HIGH_PULL, NORM_OPEN); // Кнопка вниз
-GButton up(5, HIGH_PULL, NORM_OPEN); // Кнопка вверх
-GButton ok(6, HIGH_PULL, NORM_OPEN); // Кнопка OK
+GButton down(4, HIGH_PULL, NORM_OPEN); // Button down
+GButton up(5, HIGH_PULL, NORM_OPEN); // Button up
+GButton ok(6, HIGH_PULL, NORM_OPEN); // Button OK
 
-GyverOLED<SSD1306_128x64, OLED_BUFFER> oled; // Создание объекта с именем oled
+GyverOLED<SSD1306_128x64, OLED_BUFFER> oled; // Creating object with name oled
 
-uint8_t data[ITEMS]; // Объявление массива, содержащий данные по 16 пунктам меню
-bool flag = true; // Флаг смены состояния
+uint8_t data[ITEMS]; // Declaration array, which contain data on 16 items menu
+bool flag = true; // Flag change state
 
-// Инициализация и настройка параметров дисплея
+// Inicialization and setting parameters display
 void setup() {
   delay(50);
   oled.init();
@@ -21,102 +21,102 @@ void setup() {
 }
 
 void loop(void) { 
-  static uint8_t pointer = 0; // Объявление указателя 
-  // Объявление отображаемых строк на дисплее
+  static uint8_t pointer = 0; // Declaration pointer of item menu 
+  // Declaration show strings on display
   String str_one = "Parameter."; 
   String str_two = ":";
 
-  // Обработка нажатия кнопок
+  // Handle push buttons
   down.tick();
   up.tick();
   ok.tick();
 
-  if(down.isClick() or down.isHold()) // Если кнопка вниз нажата или удержана
+  if(down.isClick() or down.isHold()) // If button down push or hold
   {
-      if(flag) // Если флаг установлен, то переместить указатель на 1 позицию вниз
+      if(flag) // If flag set, then move pointer on 1 position down
       {
-          pointer = constrain(pointer + 1, 0, ITEMS - 1); // ограничение по пунктам меню (до 16 пунктов)
+          pointer = constrain(pointer + 1, 0, ITEMS - 1); // constrain at items menu (before 16 items)
       }
-      else // В противном случае увеличить счетчик данных
+      else // Else increase counter data
       {  
         data[pointer]++;      
       }   
   }
 
-  if(up.isClick() or up.isHold()) // Если кнопка вверх нажата или удержана
+  if(up.isClick() or up.isHold()) // If button up push or hold
   {
-     if(flag) // Если флаг установлен, то переместить указатель на 1 позицию вверх
+     if(flag) // If flag set, then move pointer on 1 position up
      {
-         pointer = constrain(pointer - 1, 0, ITEMS - 1); // ограничение по пунктам меню (до 16 пунктов)
+         pointer = constrain(pointer - 1, 0, ITEMS - 1); 
      }
-     else // В противном случае уменьшить счетчик данных
+     else // Else decrease counter data
      {      
         data[pointer]--;              
      }
   }
   
-  if(ok.isClick()) // Если нажата кнопка ОК
+  if(ok.isClick()) // If push button OK
   {
-     flag = !flag;  // Инвертировать состояние флага
+     flag = !flag;  // Invert state flag
   }
   
-  oled.clear(); // Очистить дисплей
-  oled.home(); // Вернуться в начало дисплея
+  oled.clear(); // Clear display
+  oled.home(); // Return to begin of display (zero position)
   
-  if(pointer < 8) // Если указатель меньше 8
+  if(pointer < 8)
   { 
-    // Цикл для отображения первых 8 пунктов меню
+    // Loop for show first 8 items menu
      for(uint8_t i = 0; i < 8;i++) 
      {
-       oled.setCursor(8,i); // Установка курсора на начало строк
-       oled.println(str_one + i + str_two); // Отображение строк (названий пунктов меню) с номерами
-       oled.setCursor(85,i); // Установка курсора на конец строк
-       oled.print(data[i]); // Вывод данных 
+       oled.setCursor(8,i); // Set cursor on the beginning strings
+       oled.println(str_one + i + str_two); // Showing strings (names of items menu) with numbers
+       oled.setCursor(85,i); // Set cursor on the end strings
+       oled.print(data[i]); // Print data
      } 
   }
   
-  if(pointer >= 8) // Если указатель больше 8
+  if(pointer >= 8)
   {
-    // Цикл для отображения остальных 8 пунктов меню
+    // Loop for show rest 8 items menu
      for(uint8_t i = 0; i < 8;i++)
      {
-       oled.setCursor(8,i); // Установка курсора на начало строк
-       oled.println(str_one + (i+8) + str_two); // Отображение строк (названий пунктов меню) с номерами
-       oled.setCursor(85,i); // Установка курсора на конец строк
-       oled.print(data[i+8]); // Вывод данных
+       oled.setCursor(8,i); 
+       oled.println(str_one + (i+8) + str_two); 
+       oled.setCursor(85,i); 
+       oled.print(data[i+8]); 
      } 
   } 
-  PrintPointer(pointer); // Вызов функции вывода указателя
-  oled.update(); // Обновить дисплей
+  PrintPointer(pointer); // Call function print pointer
+  oled.update(); // Update display
 }
 
-// ФункциЯ вывода указателя
+// Function print pointer
 void PrintPointer(uint8_t ptr)
 {
-    if(ptr >= 8) // Если указатель больше 8
+    if(ptr >= 8) // If pointer more or equal 8
     {
-      if(flag) // Если флаг установлен
+      if(flag) // If flag set
       {
-        oled.setCursor(0, ptr-8); // Установка курсора на позицию 0 и (номер указателя - 8)
-        oled.print(">"); // Вывод значка указателя
+        oled.setCursor(0, ptr-8); // Set cursor on position 0 and (number pointer - 8)
+        oled.print(">"); // Print icon pointer
       }
-      else // В противном случае
+      else 
       {
-        oled.setCursor(120, ptr-8); // Установка курсора на позицию 120 и (номер указателя - 8)
-        oled.print("<"); // Вывод значка указателя
+        oled.setCursor(120, ptr-8); // Set cursor on position 120 and (number pointer - 8)
+        oled.print("<"); // Print icon pointer
       }
     } 
-    else // В противном случае
+    else 
     {
-      if(flag) // Если флаг по-прежнему установлен
+      if(flag) // If flag also set
       {
-        oled.setCursor(0, ptr); // Установка курсора на позицию 0 и (номер указателя)
-        oled.print(">"); // Вывод значка указателя
+        oled.setCursor(0, ptr); // Set cursor on position 0 and number pointer
+        oled.print(">"); // Print icon pointer
       }
       else
       {
-        oled.setCursor(120, ptr); // Установка курсора на позицию 120 и (номер указателя)
-        oled.print("<"); // Вывод значка указателя
+        oled.setCursor(120, ptr); // Set cursor on position 120 and number pointer
+        oled.print("<"); // Print icon pointer
       }
     }
 }
